@@ -2,9 +2,9 @@
 # Date: 4/28/2026
 
 #PLAYER VARIABLES 
-dog_name = ""          # stores player name
-health = 10            # player health
-dragon_health = 15     # enemy health
+dog_name = ""
+health = 10
+dragon_health = 15
 
 #ITEMS
 has_sword = False
