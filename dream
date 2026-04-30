@@ -1,0 +1,261 @@
+# Name: Aidan Robledo
+# Date: 4/28/2026
+# Purpose: A text-based adventure game about a Shar Pei in a dream world
+
+#PLAYER VARIABLES
+dog_name = ""          # stores player name
+health = 10            # player health
+dragon_health = 15     # enemy health
+
+#ITEMS
+has_sword = False
+has_chicken = False
+has_popcorn = False
+has_armor = False
+drank_water = False
+
+#TRACK WHERE PLAYER HAS BEEN
+visited_left = False
+visited_right = False
+visited_river = False
+visited_cabin = False
+
+skunk_experience = 4
+game_over = False
+
+#INTRO FUNCTION
+def intro():
+    global dog_name
+
+    print("=== A Shar Pei's Dream ===")
+    dog_name = input("What is your Shar Pei's name? ")
+
+    print("\n" + dog_name + " eats dinner, plays for a while, and falls asleep.")
+    print("You wake up somewhere unfamiliar.")
+    print("It's quiet. Too quiet.")
+    print("Tall trees surround you.")
+    print("A voice says, 'Find what you need before going forward.'")
+
+#SHOW AVAILABLE OPTIONS
+def show_options():
+    print("\nOptions:")
+
+    if visited_left == False:
+        print("- left")
+    if visited_right == False:
+        print("- right")
+    if visited_river == False:
+        print("- river")
+    if visited_cabin == False:
+        print("- cabin")
+
+    print("- forward")
+    print("- inventory")
+    print("- help")
+
+#SHOW INVENTORY
+def show_inventory():
+    print("\nInventory:")
+
+    if has_sword:
+        print("- Sword")
+    if has_chicken:
+        print("- Chicken")
+    if has_popcorn:
+        print("- Popcorn")
+    if has_armor:
+        print("- Blanket Armor")
+    if drank_water:
+        print("- River Water Effect")
+
+    #if player has nothing
+    if not has_sword and not has_chicken and not has_popcorn and not has_armor and not drank_water:
+        print("- Nothing yet")
+
+    print("Health:", health)
+
+#HELP MENU 
+def show_help():
+    print("\nType one of the options shown.")
+    print("Each area can only be visited once.")
+
+#COMBAT SYSTEM
+def dragon_fight():
+    global health, dragon_health, has_chicken, has_popcorn, game_over
+
+    print("\nThe creature steps closer.")
+    print("Your Health:", health)
+    print("Creature Health:", dragon_health)
+
+    #combat
+    while health > 0 and dragon_health > 0:
+        print("\nCombat Options:")
+        print("- attack")
+        print("- eat chicken")
+        print("- eat popcorn")
+        print("- run")
+
+        move = input("What do you do? ").lower()
+
+        #attack option
+        if move == "attack":
+            if has_sword:
+                damage = 5
+                dragon_health -= damage
+                print("\nYou attack with your sword.")
+            else:
+                damage = 1
+                dragon_health -= damage
+                print("\nYou attack without a weapon.")
+
+        #heal with chicken
+        elif move == "eat chicken":
+            if has_chicken:
+                has_chicken = False
+                health += 5
+                print("You eat chicken and heal.")
+            else:
+                print("No chicken.")
+
+        #heal with popcorn
+        elif move == "eat popcorn":
+            if has_popcorn:
+                has_popcorn = False
+                health += 3
+                print("You eat popcorn and heal.")
+            else:
+                print("No popcorn.")
+
+        #run away
+        elif move == "run":
+            print("\nYou run away.")
+            print("GAME OVER.")
+            game_over = True
+            return
+
+        else:
+            print("Invalid choice.")
+            continue
+
+        # dragon attacks
+        if dragon_health > 0:
+            damage = 3
+
+            if has_armor:
+                damage -= 1
+
+            health -= damage
+            print("The creature attacks you.")
+            print("Health:", health)
+
+    #check for win/lose
+    if health <= 0:
+        print("\nYou lose.")
+        print("GAME OVER.")
+        game_over = True
+
+    elif dragon_health <= 0:
+        print("\nThe creature falls.")
+        print("You smell chicken...")
+        print("You wake up next to a small piece of chicken.")
+        print("YOU WIN.")
+        game_over = True
+
+#GAME LOOP
+def play_game():
+    global visited_left, visited_right, visited_river, visited_cabin
+    global has_sword, has_chicken, has_popcorn, has_armor, drank_water
+    global health, game_over
+
+    while game_over == False:
+        show_options()
+        choice = input("\nWhat do you do? ").lower()
+
+        if choice == "help":
+            show_help()
+
+        elif choice == "inventory":
+            show_inventory()
+
+        # LEFT PATH (SWORD)
+        elif choice == "left":
+            if not visited_left:
+                visited_left = True
+                has_sword = True
+                print("You find a sword and take it.")
+            else:
+                print("Already visited.")
+
+        #RIGHT PATH
+        elif choice == "right":
+            if not visited_right:
+                visited_right = True
+                has_chicken = True
+                has_popcorn = True
+                print("You find chicken and popcorn.")
+            else:
+                print("Already visited.")
+
+        #RIVER
+        elif choice == "river":
+            if not visited_river:
+                visited_river = True
+                drank_water = True
+                health += 3
+                print("You drink from the river. Health:", health)
+            else:
+                print("Already visited.")
+
+        #CABIN
+        elif choice == "cabin":
+            if not visited_cabin:
+                visited_cabin = True
+                has_armor = True
+                print("You find armor.")
+            else:
+                print("Already visited.")
+
+        #FINAL AREA
+        elif choice == "forward":
+            print("\nYou move deeper into the forest.")
+            print("A Skunk Dragon appears.")
+
+            print("\nOptions:")
+            print("- fight")
+            print("- run")
+            print("- offer chicken")
+            print("- do nothing")
+
+            battle_choice = input("What do you do? ").lower()
+
+            if battle_choice == "fight":
+                dragon_fight()
+
+            elif battle_choice == "run":
+                print("You run away. GAME OVER.")
+                game_over = True
+
+            elif battle_choice == "offer chicken":
+                if has_chicken:
+                    print("You give the chicken.")
+                    print("The creature lets you pass.")
+                    print("YOU WIN.")
+                else:
+                    print("No chicken. GAME OVER.")
+                game_over = True
+
+            elif battle_choice == "do nothing":
+                print("You hesitate.")
+                print("GAME OVER.")
+                game_over = True
+
+            else:
+                print("Invalid choice. GAME OVER.")
+                game_over = True
+
+        else:
+            print("Invalid choice.")
+
+# START GAME 
+intro()
+play_game()
